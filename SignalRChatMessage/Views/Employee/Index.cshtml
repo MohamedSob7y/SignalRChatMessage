@@ -1,0 +1,124 @@
+﻿@{
+    ViewData["Title"] = "Employee SignalR Demo";
+}
+
+<h2>SignalR Employee Demo</h2>
+
+<div style="display: flex; gap: 40px; align-items: flex-start;">
+
+    <!-- Employee Model Box -->
+    <div style="border: 2px solid black; width: 180px; padding: 15px;">
+        <h3>employee</h3>
+        <p>id</p>
+        <p>name</p>
+        <p>address</p>
+        <p>age</p>
+    </div>
+
+    <!-- Add Employee Form -->
+    <div style="border: 2px solid black; width: 260px; padding: 15px;">
+        <h3>add employee</h3>
+
+        <div>
+            <input id="idInput" type="number" placeholder="Id" />
+        </div>
+
+        <br />
+
+        <div>
+            <input id="nameInput" type="text" placeholder="Name" />
+        </div>
+
+        <br />
+
+        <div>
+            <input id="addressInput" type="text" placeholder="Address" />
+        </div>
+
+        <br />
+
+        <div>
+            <input id="ageInput" type="number" placeholder="Age" />
+        </div>
+
+        <br />
+
+        <button id="addButton">Add</button>
+    </div>
+
+    <!-- Display Employee Table -->
+    <div style="border: 2px solid black; width: 450px; padding: 15px;">
+        <h3>display employee</h3>
+
+        <table border="1" width="100%" cellpadding="8">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Name</th>
+                    <th>Address</th>
+                    <th>Age</th>
+                </tr>
+            </thead>
+
+            <tbody id="employeeTableBody">
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+
+
+@section Scripts {
+    <script src="~/microsoft/signalr/dist/browser/signalr.js"></script>
+
+    <script>
+        // 1. Create connection with EmployeeHub
+        const con = new signalR.HubConnectionBuilder()
+            .withUrl("/employeeHub")
+            .build();
+
+        // 2. Start SignalR connection
+        con.start()
+            .then(function () {
+                console.log("Connected to EmployeeHub");
+            })
+            .catch(function (err) {
+                console.error(err.toString());
+            });
+
+        // 3. Receive employee from server
+        con.on("ReceiveEmployee", function (emp) {
+            $("#employeeTableBody").append(`
+                <tr>
+                    <td>${emp.id}</td>
+                    <td>${emp.name}</td>
+                    <td>${emp.address}</td>
+                    <td>${emp.age}</td>
+                </tr>
+            `);
+        });
+
+        // 4. Send employee to server when clicking Add button
+        $("#addButton").click(function () {
+
+            const emp = {
+                id: parseInt($("#idInput").val()),
+                name: $("#nameInput").val(),
+                address: $("#addressInput").val(),
+                age: parseInt($("#ageInput").val())
+            };
+
+            con.invoke("AddEmployee", emp)
+                .catch(function (err) {
+                    console.error(err.toString());
+                });
+
+            // clear inputs after sending
+            $("#idInput").val("");
+            $("#nameInput").val("");
+            $("#addressInput").val("");
+            $("#ageInput").val("");
+        });
+    </script>
+}

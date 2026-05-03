@@ -36,9 +36,14 @@ namespace SignalRChatMessage
                 pattern: "{controller=chat}/{action=Index}/{id?}")
                 .WithStaticAssets();
             #region Make URL For This Service 
-            app.MapHub<ChatMessageHub>("/Chat"); 
+            app.MapHub<ChatMessageHub>("/Chat");
             //Make URL For Service  عشان لما ادوس على زرار send Call Method service by this Link
             //وعملت اللينك كدا عشان موجود معايا فى نفس الProject انما لو موجود فى Poject تانى لازك ابقى اكتب اللينك بتاعه كامل 
+
+            //===============================================
+            //Make url For Service Adding Employee
+            app.MapHub<EmployeeHub>("/employeeHub");
+
             #endregion
             app.Run();
         }

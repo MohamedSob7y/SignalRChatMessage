@@ -1,0 +1,58 @@
+﻿@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Chat</h1>
+<input type="text" id="txt" />
+<input type="button" value="send" onclick="send()" />
+<br />
+<ul id="ul">
+</ul>
+
+@section Scripts {
+
+    <script src="~/microsoft/signalr/dist/browser/signalr.js"></script>
+    <script>
+          name = prompt("enter your name");
+          //define connection
+           con = new signalR.HubConnectionBuilder().withUrl("/chat").build();
+
+          //start connection
+          con.start();
+        //  alert("connection start")
+
+          //define call back fun
+          con.on("newmessage", function (n, m) {
+              $("#ul").append("<li>" + n + ":" + m + "</li>");
+            //  alert("message broadcast from server");
+          })
+
+          // con.on("newmessage", function (mess) {
+          //     $("#ul").append("<li>" + mess.username + ":" + mess.messagetxt + "</li>");
+          //      alert("message broadcast from server");
+          // })
+
+          //define fun to consume server
+
+          function send(){
+
+
+              con.invoke("sendmessage",name,$("#txt").val())
+            //  alert("send message to service ");
+          }
+
+          // function send() {
+
+          //     var obj={
+          //         "username":name,
+          //         "messagetxt":$("#txt").val()
+          //     }
+          //     con.invoke("sendmessage",obj)
+          //      alert("send message to service ");
+          // }
+
+    </script>
+
+
+}
+
